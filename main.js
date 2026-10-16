@@ -14,7 +14,6 @@ function el(tag, attrs = {}, ...kids) {
 }
 
 const href = (a) => `articles/${a.slug}.html`;
-const cover = (a) => el("img", { src: `articles/covers/${a.slug}.svg`, alt: "", loading: "lazy", width: "1200", height: "630" });
 
 function meta(a) {
   return el("p", { class: "post-meta" },
@@ -35,8 +34,7 @@ function tagList(a) {
 }
 
 function card(a) {
-  return el("li", { class: "card" },
-    el("a", { class: "card-cover", href: href(a), tabindex: "-1", "aria-hidden": "true" }, cover(a)),
+  return el("li", { class: `card k-${a.kind}` },
     meta(a),
     el("h3", {}, el("a", { href: href(a) }, a.title)),
     el("p", { class: "card-sum" }, a.summary),
@@ -47,20 +45,16 @@ function renderLatest() {
   // Lead with the newest fully researched topic; fall back to the newest of any status.
   const lead = articles.find((a) => a.status === "complete") || articles[0];
   if (!lead) { $("#latest").hidden = true; return; }
-  $("#featured").replaceChildren(el("article", { class: "feature" },
-    el("a", { class: "feature-cover", href: href(lead), tabindex: "-1", "aria-hidden": "true" }, cover(lead)),
-    el("div", { class: "feature-text" },
-      meta(lead),
-      el("h3", {}, el("a", { href: href(lead) }, lead.title)),
-      el("p", {}, lead.summary),
-      el("a", { class: "read-link", href: href(lead) }, "Read the explainer"))));
+  $("#featured").replaceChildren(el("article", { class: `feature k-${lead.kind}` },
+    meta(lead),
+    el("h3", {}, el("a", { href: href(lead) }, lead.title)),
+    el("p", {}, lead.summary),
+    el("a", { class: "read-link", href: href(lead) }, "Read the explainer")));
   $("#recent").replaceChildren(...articles.filter((a) => a !== lead).slice(0, 4).map((a) =>
     el("li", {},
       el("a", { href: href(a) },
-        el("span", { class: "thumb" }, cover(a)),
-        el("span", { class: "recent-text" },
-          el("span", { class: "recent-title" }, a.title),
-          el("span", { class: "recent-meta" }, `${STATUS[a.status]}, ${a.read} min read`))))));
+        el("span", { class: "recent-title" }, a.title),
+        el("span", { class: "recent-meta" }, `${STATUS[a.status]}, ${a.read} min read`)))));
   $("#recent").hidden = !$("#recent").children.length;
 }
 

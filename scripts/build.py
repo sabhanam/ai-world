@@ -1,8 +1,6 @@
 """Build articles/<slug>.html and data/articles.json from content/articles/*.md."""
 import html
 import json
-import math
-import random
 import re
 from pathlib import Path
 
@@ -61,47 +59,6 @@ def load(path):
 
 
 
-# Kind -> (gradient start, gradient end, glow). Covers are the one bold element of the design.
-PALETTE = {
-    "concept": ("#1b2f8f", "#3b5bf0", "#8fa6ff"),
-    "product": ("#9a3412", "#f97316", "#ffd2ad"),
-    "news": ("#4c1d95", "#8b5cf6", "#d6c4ff"),
-}
-
-
-def cover(slug, kind):
-    """A 'signal' cover: light lines flowing over the kind's colour, shaped by the slug so each topic keeps its look."""
-    start, end, glow = PALETTE[kind]
-    rnd = random.Random(slug)
-    w, h = 1200, 630
-    paths = []
-    n = 11
-    hero = rnd.randrange(3, n - 3)  # the one line that stands out: the signal in the noise
-    for i in range(n):
-        base = h * (0.12 + 0.76 * i / (n - 1))
-        amp = rnd.uniform(30, 120)
-        freq = rnd.uniform(0.5, 1.5)
-        phase = rnd.uniform(0, math.tau)
-        pts = [(x, base + amp * math.sin(freq * x / w * math.tau + phase) + rnd.uniform(-12, 12))
-               for x in range(-100, w + 201, 150)]
-        d = f"M{pts[0][0]},{pts[0][1]:.0f} Q{pts[1][0]},{pts[1][1]:.0f} {pts[2][0]},{pts[2][1]:.0f}"
-        d += "".join(f" T{x},{y:.0f}" for x, y in pts[3:])
-        if i == hero:
-            paths.append(f'<path d="{d}" stroke="#ffffff" stroke-width="5" opacity="0.95"/>')
-        else:
-            paths.append(f'<path d="{d}" stroke="{glow}" stroke-width="1.5" opacity="{round(0.18 + 0.42 * rnd.random(), 2)}"/>')
-    cx, cy = rnd.randint(200, 1000), rnd.randint(120, 500)
-    return (
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" preserveAspectRatio="xMidYMid slice">'
-        f'<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'
-        f'<stop offset="0" stop-color="{start}"/><stop offset="1" stop-color="{end}"/></linearGradient>'
-        f'<radialGradient id="r" cx="{cx}" cy="{cy}" r="520" gradientUnits="userSpaceOnUse">'
-        f'<stop offset="0" stop-color="{glow}" stop-opacity="0.45"/><stop offset="1" stop-color="{glow}" stop-opacity="0"/></radialGradient></defs>'
-        f'<rect width="{w}" height="{h}" fill="url(#g)"/><rect width="{w}" height="{h}" fill="url(#r)"/>'
-        f'<g fill="none" stroke-linecap="round">{"".join(paths)}</g></svg>\n'
-    )
-
-
 def read_minutes(body):
     return max(1, round(len(re.findall(r"\w+", body)) / 220))
 
@@ -153,7 +110,6 @@ def page(meta, body):
     <h1>{e(meta['title'])}</h1>
     <p class="lede">{e(meta['summary'])}</p>
   </header>
-  <figure class="post-cover"><img src="covers/{e(meta['slug'])}.svg" alt="" width="1200" height="630"></figure>
   <div class="post-body">
     {notes}
     <div class="prose">{content}</div>
@@ -182,21 +138,19 @@ document.querySelector("[data-copy]").addEventListener("click", async (ev) => {{
 
 
 def build():
-    covers = OUT / "covers"
-    covers.mkdir(parents=True, exist_ok=True)
+    OUT.mkdir(exist_ok=True)
     INDEX.parent.mkdir(exist_ok=True)
     items = []
     for path in sorted(SRC.glob("*.md")):
         meta, body = load(path)
         meta["read"] = read_minutes(body)
         (OUT / f"{meta['slug']}.html").write_text(page(meta, body), encoding="utf-8")
-        (covers / f"{meta['slug']}.svg").write_text(cover(meta["slug"], meta["kind"]), encoding="utf-8")
         item = {k: meta[k] for k in ("slug", "title", "kind", "status", "summary", "tags", "updated", "sponsored", "read")}
         item["sources"] = len(meta["sources"])
         items.append(item)
-    # Drop pages and covers whose markdown was removed.
+    # Drop pages whose markdown was removed.
     live = {i["slug"] for i in items}
-    for old in [*OUT.glob("*.html"), *covers.glob("*.svg")]:
+    for old in OUT.glob("*.html"):
         if old.stem not in live:
             old.unlink()
     items.sort(key=lambda i: i["updated"], reverse=True)

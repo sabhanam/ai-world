@@ -1,5 +1,5 @@
 /* Tokens shared with sabhanam.github.io/me. Light theme only, like the parent site.
-   Inter for interface and headings; Source Serif 4 for reading. The generated covers are the one loud element. */
+   Inter for interface and headings; Source Serif 4 for reading. No images: colour per kind carries the structure. */
 :root {
   --bg: #ffffff;
   --surface: #f5f7fb;
@@ -104,9 +104,11 @@ main > section { max-width: var(--wrap); margin: 0 auto; padding: clamp(48px, 6v
 .post-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 0.8125rem; color: var(--muted); margin: 0 0 12px; }
 .kind { text-transform: capitalize; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
 .kind::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
-.k-concept { color: var(--accent); }
-.k-product { color: #c2410c; }
-.k-news { color: var(--violet); }
+/* Each kind sets --k (its colour) and --k-tint; .kind and the card rules read them. */
+.k-concept { --k: var(--accent); --k-tint: #eef2ff; }
+.k-product { --k: #c2410c; --k-tint: #fff4ea; }
+.k-news { --k: var(--violet); --k-tint: #f3edff; }
+.kind { color: var(--k); }
 .status { font-weight: 500; }
 .status.wip { color: #b45309; }
 .status.complete { color: #047857; }
@@ -122,10 +124,11 @@ main > section { max-width: var(--wrap); margin: 0 auto; padding: clamp(48px, 6v
 /* Latest: one featured explainer, the next few as a list */
 .latest .section-title { margin-bottom: 28px; }
 .latest-grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 56px); align-items: start; }
-.feature-cover, .card-cover { display: block; overflow: hidden; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); }
-.feature-cover img, .card-cover img { width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; transition: transform 0.6s cubic-bezier(.2, .7, .2, 1); }
-.feature-cover:hover img, .card-cover:hover img { transform: scale(1.03); }
-.feature-text { padding-top: 22px; }
+.feature {
+  padding: clamp(28px, 4vw, 44px); border-radius: 16px;
+  background: linear-gradient(160deg, var(--k-tint), #fff 70%);
+  border: 1px solid var(--line); border-top: 4px solid var(--k);
+}
 .feature h3 { font-size: clamp(1.75rem, 3.2vw, 2.375rem); line-height: 1.1; letter-spacing: -0.03em; margin: 0 0 12px; }
 .feature h3 a, .card h3 a { color: var(--ink); text-decoration: none; }
 .feature h3 a:hover, .card h3 a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
@@ -135,9 +138,7 @@ main > section { max-width: var(--wrap); margin: 0 auto; padding: clamp(48px, 6v
 
 .recent { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
 .recent li { border-bottom: 1px solid var(--line); }
-.recent a { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center; padding: 16px 0; text-decoration: none; }
-.thumb { display: block; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
-.thumb img { aspect-ratio: 4 / 3; object-fit: cover; }
+.recent a { display: block; padding: 18px 0; text-decoration: none; }
 .recent-title { display: block; font-weight: 600; color: var(--ink); line-height: 1.35; margin-bottom: 4px; }
 .recent a:hover .recent-title { color: var(--accent); }
 .recent-meta { display: block; font-size: 0.8125rem; color: var(--muted); }
@@ -152,8 +153,7 @@ main > section { max-width: var(--wrap); margin: 0 auto; padding: clamp(48px, 6v
 .status-line { font-size: 0.875rem; color: var(--muted); margin: 0 0 28px; }
 
 .grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 44px 32px; }
-.card { display: flex; flex-direction: column; }
-.card-cover { margin-bottom: 16px; border-radius: 12px; }
+.card { display: flex; flex-direction: column; padding-top: 20px; border-top: 3px solid var(--k); }
 .card h3 { font-size: 1.25rem; line-height: 1.25; letter-spacing: -0.02em; margin: 0 0 8px; }
 .card-sum { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.55; flex: 1; }
 
@@ -171,9 +171,7 @@ main > section { max-width: var(--wrap); margin: 0 auto; padding: clamp(48px, 6v
 .post-head { max-width: calc(var(--read) + 2 * var(--pad)); margin: 0 auto; padding: clamp(40px, 6vw, 72px) var(--pad) 32px; }
 .post-head h1 { font-size: clamp(2.125rem, 5vw, 3.25rem); line-height: 1.06; letter-spacing: -0.035em; color: var(--ink); margin: 0 0 18px; text-wrap: balance; }
 .post-head .lede { font-family: var(--serif); font-size: clamp(1.1875rem, 2vw, 1.375rem); line-height: 1.5; color: var(--muted); margin: 0; }
-.post-cover { max-width: 960px; margin: 0 auto; padding: 0 var(--pad); }
-.post-cover img { width: 100%; aspect-ratio: 1200 / 480; object-fit: cover; border-radius: 18px; border: 1px solid var(--line); }
-.post-body { max-width: calc(var(--read) + 2 * var(--pad)); margin: 0 auto; padding: 40px var(--pad) 0; }
+.post-body { max-width: calc(var(--read) + 2 * var(--pad)); margin: 0 auto; padding: 8px var(--pad) 0; }
 
 .note { font-size: 0.9375rem; padding: 14px 16px; border-radius: 10px; border-left: 3px solid; margin-bottom: 28px; }
 .note.wip { background: #fff7ed; border-color: var(--warm); color: #7c2d12; }
@@ -220,11 +218,8 @@ main > section { max-width: var(--wrap); margin: 0 auto; padding: clamp(48px, 6v
 @media (max-width: 520px) {
   .plain { padding: 20px; }
   .prose { font-size: 1.125rem; }
-  .post-cover { padding: 0; }
-  .post-cover img { border-radius: 0; border-left: 0; border-right: 0; aspect-ratio: 1200 / 630; }
 }
 @media (prefers-reduced-motion: reduce) {
   .aurora { animation: none; }
-  .feature-cover img, .card-cover img { transition: none; }
   .progress { display: none; }
 }

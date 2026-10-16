@@ -19,7 +19,5 @@ assert body.startswith("## Body")
 items = build()
 assert items == json.loads(INDEX.read_text())
 assert all({"slug", "title", "kind", "status", "summary", "tags", "updated", "read", "sources"} <= i.keys() for i in items)
-from build import OUT
-assert all((OUT / "covers" / f"{i['slug']}.svg").exists() for i in items)
 assert [i["updated"] for i in items] == sorted((i["updated"] for i in items), reverse=True)
 print("ok")
