@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAG (retrieval-augmented generation) · AI World</title>
+<meta name="description" content="A way to make an AI answer from your own documents by looking up the relevant bits first and handing them to the model.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RAG (retrieval-augmented generation)">
+<meta property="og:description" content="A way to make an AI answer from your own documents by looking up the relevant bits first and handing them to the model.">
+<meta property="og:url" content="https://sabhanam.github.io/ai-world/articles/rag-pipelines.html">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://sabhanam.github.io/ai-world/articles/rag-pipelines.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<header class="site-nav"><a class="brand" href="../">AI World</a><nav><a href="../">All topics</a></nav></header>
+<main class="article">
+  <p class="meta"><span class="kind">concept</span><span class="status wip">WIP</span><span>Updated 2026-10-16</span></p>
+  <h1>RAG (retrieval-augmented generation)</h1>
+  <p class="lede">A way to make an AI answer from your own documents by looking up the relevant bits first and handing them to the model.</p>
+  <p class="banner">Work in progress: the AI is still researching this one. Facts may be incomplete.</p>
+  <ul class="tags"><li>rag</li><li>search</li><li>llm-basics</li></ul>
+  <div class="prose"><h2>In plain words</h2>
+<p>An AI model can't read all your company's documents at once, and it can't know what it was never trained on. RAG fixes this by searching your documents for the few passages that matter to a question, then giving those passages to the model along with the question. The model answers using them, so its answer is grounded in your material.</p></div>
+  <section class="sources"><h2>Sources</h2><ol><li><a href="https://en.wikipedia.org/wiki/Retrieval-augmented_generation" rel="noopener">https://en.wikipedia.org/wiki/Retrieval-augmented_generation</a></li></ol></section>
+  <p><button class="btn ghost" type="button" data-copy="https://sabhanam.github.io/ai-world/articles/rag-pipelines.html">Copy link</button></p>
+</main>
+<script>
+document.querySelector("[data-copy]").addEventListener("click", async (ev) => {
+  try { await navigator.clipboard.writeText(ev.target.dataset.copy); ev.target.textContent = "Link copied"; }
+  catch { prompt("Copy this link", ev.target.dataset.copy); }
+});
+</script>
+</body>
+</html>

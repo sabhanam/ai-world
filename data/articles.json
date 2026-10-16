@@ -1,0 +1,30 @@
+[
+  {
+    "slug": "model-context-protocol",
+    "title": "Model Context Protocol (MCP)",
+    "kind": "concept",
+    "status": "complete",
+    "summary": "An open standard that lets AI assistants plug into outside tools and data, so one connector works with many apps.",
+    "tags": [
+      "agents",
+      "tooling",
+      "anthropic"
+    ],
+    "updated": "2026-10-17",
+    "sponsored": false
+  },
+  {
+    "slug": "rag-pipelines",
+    "title": "RAG (retrieval-augmented generation)",
+    "kind": "concept",
+    "status": "wip",
+    "summary": "A way to make an AI answer from your own documents by looking up the relevant bits first and handing them to the model.",
+    "tags": [
+      "rag",
+      "search",
+      "llm-basics"
+    ],
+    "updated": "2026-10-16",
+    "sponsored": false
+  }
+]

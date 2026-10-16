@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI World</title>
+<meta name="description" content="What's happening in AI, explained in plain words. Collected from videos and news, researched and written up by AI agents.">
+<meta property="og:title" content="AI World">
+<meta property="og:description" content="What's happening in AI, explained in plain words.">
+<meta property="og:url" content="https://sabhanam.github.io/ai-world/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-nav"><a class="brand" href="./">AI World</a><nav><a href="https://sabhanam.github.io/me/">About me</a></nav></header>
+<main>
+  <section class="intro">
+    <h1 class="section-title">What's happening in AI, in plain words.</h1>
+    <p class="section-lede">Picked up from videos and news, then researched and written up by AI agents. Pages marked <span class="status wip">WIP</span> are still being researched.</p>
+    <div class="controls">
+      <input id="q" type="search" placeholder="Search topics, e.g. MCP, agents, RAG" aria-label="Search topics" autocomplete="off">
+      <div class="kinds" role="group" aria-label="Filter by kind">
+        <button type="button" data-kind="" aria-pressed="true">All</button>
+        <button type="button" data-kind="product" aria-pressed="false">Products</button>
+        <button type="button" data-kind="concept" aria-pressed="false">Concepts</button>
+        <button type="button" data-kind="news" aria-pressed="false">News</button>
+      </div>
+    </div>
+    <p id="active-tag" class="active-tag" hidden></p>
+    <p id="count" class="count" aria-live="polite"></p>
+    <ul id="feed" class="feed"></ul>
+  </section>
+</main>
+<script src="main.js"></script>
+</body>
+</html>

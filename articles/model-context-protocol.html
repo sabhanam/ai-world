@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model Context Protocol (MCP) · AI World</title>
+<meta name="description" content="An open standard that lets AI assistants plug into outside tools and data, so one connector works with many apps.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Model Context Protocol (MCP)">
+<meta property="og:description" content="An open standard that lets AI assistants plug into outside tools and data, so one connector works with many apps.">
+<meta property="og:url" content="https://sabhanam.github.io/ai-world/articles/model-context-protocol.html">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://sabhanam.github.io/ai-world/articles/model-context-protocol.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<header class="site-nav"><a class="brand" href="../">AI World</a><nav><a href="../">All topics</a></nav></header>
+<main class="article">
+  <p class="meta"><span class="kind">concept</span><span class="status complete">Complete</span><span>Updated 2026-10-17</span></p>
+  <h1>Model Context Protocol (MCP)</h1>
+  <p class="lede">An open standard that lets AI assistants plug into outside tools and data, so one connector works with many apps.</p>
+  
+  <ul class="tags"><li>agents</li><li>tooling</li><li>anthropic</li></ul>
+  <div class="prose"><h2>In plain words</h2>
+<p>An AI assistant on its own only knows what it was trained on and what you paste in. MCP is a common "plug shape" that lets it connect to other things, like your files, a database, GitHub or a calendar, so it can look things up and take actions. Anthropic introduced it in November 2024 as an open standard, and many other AI apps now support it.</p>
+<h2>What it is</h2>
+<p>MCP (Model Context Protocol) is a set of rules for how an AI app and an outside tool talk to each other. A protocol is just an agreed way of exchanging messages, the way every website speaks HTTP.</p>
+<p>Before MCP, every AI app needed its own custom connector for every tool. With MCP, a tool maker writes <strong>one MCP server</strong>, and any app that speaks MCP can use it.</p>
+<h2>Why it matters</h2>
+<ul>
+<li><strong>Less duplicated work.</strong> Write a connector once and it works in Claude, IDEs (code editors) and other agents.</li>
+<li><strong>Assistants can act, not just chat.</strong> With the right servers, an assistant can search your docs, open a pull request or query a database.</li>
+<li><strong>You stay in control.</strong> Apps usually ask before a tool runs, and you choose which servers to install.</li>
+</ul>
+<h2>How it works</h2>
+<p>Think of a power strip: the AI app is the wall socket, and each MCP server is a device you plug in.</p>
+<ol>
+<li><strong>Host:</strong> the app you use, such as Claude Desktop or an IDE. It runs an <strong>MCP client</strong> for each server it connects to.</li>
+<li><strong>Server:</strong> a small program that wraps one tool or data source. It tells the client what it offers:<ul>
+<li><strong>Tools:</strong> actions the AI can call, like <code>create_issue</code>.</li>
+<li><strong>Resources:</strong> data it can read, like a file.</li>
+<li><strong>Prompts:</strong> ready-made instructions.</li>
+</ul>
+</li>
+<li><strong>Conversation:</strong> when you ask something, the model sees the list of available tools and decides to call one. The client sends the request to the server, which does the work and returns the result for the model to use in its answer.</li>
+</ol>
+<pre><code>You ──&gt; AI app (host) ──MCP client──&gt; MCP server ──&gt; GitHub / files / database
+                ^                         │
+                └────── result ───────────┘
+</code></pre>
+<p>Servers can run on your own machine, talking over standard input/output, or remotely over HTTP.</p>
+<h2>Things to watch</h2>
+<ul>
+<li><strong>Security:</strong> a server can do whatever its code allows. Only install servers you trust, and watch for "prompt injection", where text from a web page or file tries to trick the AI into misusing a tool.</li>
+<li><strong>Quality varies:</strong> there are thousands of community servers, and not all are maintained.</li>
+</ul></div>
+  <section class="sources"><h2>Sources</h2><ol><li><a href="https://modelcontextprotocol.io/" rel="noopener">https://modelcontextprotocol.io/</a></li><li><a href="https://www.anthropic.com/news/model-context-protocol" rel="noopener">https://www.anthropic.com/news/model-context-protocol</a></li><li><a href="https://github.com/modelcontextprotocol" rel="noopener">https://github.com/modelcontextprotocol</a></li></ol></section>
+  <p><button class="btn ghost" type="button" data-copy="https://sabhanam.github.io/ai-world/articles/model-context-protocol.html">Copy link</button></p>
+</main>
+<script>
+document.querySelector("[data-copy]").addEventListener("click", async (ev) => {
+  try { await navigator.clipboard.writeText(ev.target.dataset.copy); ev.target.textContent = "Link copied"; }
+  catch { prompt("Copy this link", ev.target.dataset.copy); }
+});
+</script>
+</body>
+</html>
