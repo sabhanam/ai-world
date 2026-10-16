@@ -20,6 +20,15 @@ PRESS = {"techcrunch.com", "theverge.com", "wired.com", "arstechnica.com", "reut
          "nytimes.com", "ft.com", "venturebeat.com", "technologyreview.com", "cnbc.com", "theinformation.com",
          "wikipedia.org"}
 STATUS_TEXT = {"wip": "Still researching", "complete": "Researched"}
+VERDICTS = {"worth-trying": "Worth trying", "watch": "Watch this", "hype": "Mostly hype"}
+# The sections a finished page of each kind has. Progress bars count these.
+SECTIONS = {
+    "concept": ["In plain words", "Key takeaways", "What it is", "How it works", "Why it matters", "Things to watch"],
+    "product": ["In plain words", "Key takeaways", "What it is", "Why it matters", "Things to watch"],
+    "news": ["In plain words", "Key takeaways", "What happened", "Why it matters", "Things to watch"],
+}
+FONTS = ("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800"
+         "&family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap")
 e = lambda s: html.escape(str(s), quote=True)
 
 
@@ -82,7 +91,33 @@ def load(path):
     meta["sources"] = [source(s) for s in meta.get("sources") or []]
     meta["sponsored"] = str(meta.get("sponsored", "")).lower() == "true"
     meta["read"] = max(1, round(len(re.findall(r"\w+", body)) / 220))
+    if meta.get("verdict") and meta["verdict"] not in VERDICTS:
+        raise ValueError(f"{path.name}: verdict must be one of {', '.join(VERDICTS)}")
+    meta["take_approved"] = str(meta.get("take_approved", "")).lower() == "true"
+    have = {h.strip() for h in re.findall(r"^## (.+)$", body, re.M)}
+    meta["missing"] = [h for h in SECTIONS[meta["kind"]] if h not in have]
+    meta["progress"] = [len(SECTIONS[meta["kind"]]) - len(meta["missing"]), len(SECTIONS[meta["kind"]])]
+    meta["found"] = provenance(meta)
     return meta, body
+
+
+def provenance(meta):
+    """Where this topic was first picked up: the raw file in `found_in`, else the first source's site."""
+    raw = ROOT / meta["found_in"] if meta.get("found_in") else None
+    if raw and raw.is_file():
+        r, _ = parse(raw.read_text(encoding="utf-8"))
+        if r.get("source") == "youtube":
+            return {"text": f"First heard in {r.get('channel', 'a video')} on YouTube, {r.get('published', '')}", "url": r.get("url")}
+        return {"text": f"First read on {r.get('site', 'the web')}, {r.get('published', '')}", "url": r.get("url")}
+    if meta["sources"]:
+        url = meta["sources"][0][0]
+        return {"text": f"First found on {urlparse(url).netloc.removeprefix('www.')}", "url": url}
+    return None
+
+
+def progress_bar(done, total):
+    cells = "".join(f'<i class="{"on" if n < done else ""}"></i>' for n in range(total))
+    return f'<span class="meter" role="img" aria-label="{done} of {total} sections written">{cells}</span>'
 
 
 def load_glossary():
@@ -133,6 +168,21 @@ def page(meta, body, by_slug, glossary):
                          rf'<aside class="{cls}" aria-labelledby="\1"><h2 id="\1">{name}</h2>\2</aside>',
                          content, count=1, flags=re.S)
     content = add_terms(content, glossary, meta["title"])
+    # Sections the researcher hasn't written yet show as placeholders, so the page visibly grows.
+    content += "".join(
+        f'<section class="pending" aria-label="{e(h)}, not written yet"><h2>{e(h)}</h2>'
+        f'<p>Being researched.</p><span class="ghost"></span><span class="ghost short"></span></section>'
+        for h in meta["missing"])
+
+    take = ""
+    if meta.get("take") and meta.get("verdict"):
+        label = "My take" if meta["take_approved"] else "Draft take, not reviewed yet"
+        take = (f'<aside class="take v-{e(meta["verdict"])}{"" if meta["take_approved"] else " draft"}">'
+                f'<p class="take-head"><span>{label}</span><strong>{VERDICTS[meta["verdict"]]}</strong></p>'
+                f'<p>{e(meta["take"])}</p></aside>')
+    found = meta["found"]
+    found_html = (f'<p class="found"><a href="{e(found["url"])}" rel="noopener">{e(found["text"])}</a>. '
+                  f'Researched from {len(meta["sources"])} source{"s" if len(meta["sources"]) != 1 else ""}.</p>') if found else ""
 
     notes = ""
     if meta["status"] == "wip":
@@ -171,7 +221,7 @@ def page(meta, body, by_slug, glossary):
 <script>try{{const t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}}catch{{}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link href="{FONTS}" rel="stylesheet">
 <link rel="stylesheet" href="../styles.css">
 </head>
 <body class="post-page">
@@ -183,14 +233,15 @@ def page(meta, body, by_slug, glossary):
 <main>
 <article class="post k-{e(meta['kind'])}">
   <header class="post-head">
-    <p class="post-meta"><a class="kind" href="../?kind={e(meta['kind'])}#topics">{e(meta['kind'])}</a><span class="status {e(meta['status'])}">{STATUS_TEXT[meta['status']]}</span><time datetime="{e(meta['updated'])}">Updated {e(meta['updated'])}</time><span>{meta['read']} min read</span></p>
+    <p class="post-meta"><a class="kind" href="../?kind={e(meta['kind'])}#topics">{e(meta['kind'])}</a><span class="status {e(meta['status'])}">{STATUS_TEXT[meta['status']]}</span><time datetime="{e(meta['updated'])}">Updated {e(meta['updated'])}</time><span>{meta['read']} min read</span><span class="meter-wrap">{progress_bar(*meta['progress'])}{meta['progress'][0]} of {meta['progress'][1]} sections</span></p>
     <h1>{e(meta['title'])}</h1>
     <p class="lede">{e(meta['summary'])}</p>
+    {found_html}
   </header>
   <div class="post-layout">
     <nav class="toc" aria-label="On this page"><p>On this page</p><ol>{toc_html}<li><a href="#src">Sources</a></li></ol></nav>
     <div class="post-body">
-      {notes}
+      {take}{notes}
       <div class="prose">{content}</div>
       <section class="post-sources" aria-labelledby="src">
         <h2 id="src">Sources</h2>
@@ -227,7 +278,10 @@ def build():
     for meta, body in loaded:
         (OUT / f"{meta['slug']}.html").write_text(page(meta, body, by_slug, glossary), encoding="utf-8")
         item = {k: meta[k] for k in ("slug", "title", "kind", "status", "summary", "tags", "updated",
-                                     "sponsored", "read", "related")}
+                                     "sponsored", "read", "related", "progress", "found")}
+        if meta.get("verdict"):
+            item["verdict"] = meta["verdict"]
+            item["take_approved"] = meta["take_approved"]
         item["sources"] = len(meta["sources"])
         items.append(item)
     # Drop pages whose markdown was removed.

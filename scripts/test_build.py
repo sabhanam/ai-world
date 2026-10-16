@@ -31,3 +31,11 @@ out = add_terms("<p>An LLM is an LLM.</p><pre><code>LLM</code></pre>", {"LLM": "
 assert out.count('class="term"') == 1 and "<code>LLM</code>" in out, out
 assert add_terms("<p>LLM</p>", {"LLM": "a model"}, "What is an LLM") == "<p>LLM</p>"  # page about the term itself
 print("ok: sources and glossary")
+
+from build import progress_bar
+by = {i["slug"]: i for i in items}
+assert by["rag-pipelines"]["progress"] == [1, 6], by["rag-pipelines"]["progress"]
+assert all(i["progress"][0] == i["progress"][1] for i in items if i["status"] == "complete")
+assert progress_bar(2, 3).count('class="on"') == 2
+assert all(i["found"] and i["found"]["text"] for i in items)
+print("ok: progress and provenance")

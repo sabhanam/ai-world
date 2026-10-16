@@ -6,6 +6,9 @@ status: complete
 summary: Anthropic's coding agent. It reads your project, edits files and runs commands from the terminal, your IDE or the browser.
 tags: [agents, coding, anthropic]
 related: [ai-agents, model-context-protocol]
+verdict: worth-trying
+take: "One of the most capable coding agents today. Try it on a real task in a project with tests, so you can see whether its work holds up."
+take_approved: false
 sponsored: false
 updated: 2026-10-14
 sources:

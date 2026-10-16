@@ -27,6 +27,10 @@ status: wip              # wip | complete
 summary: One or two sentences a busy reader can stop at.
 tags: [agents, tooling]
 related: [ai-agents, claude-code]   # slugs of other pages this one connects to
+found_in: raw/youtube/fireship/2026-10-12-abc123.md   # the raw file this topic was first picked up from
+verdict: worth-trying    # worth-trying | watch | hype
+take: "One line: should a reader care, and what should they do about it?"
+take_approved: false     # only the site owner sets this to true
 sponsored: false         # true if any source was a paid mention
 updated: 2026-10-17
 sources:
@@ -36,7 +40,7 @@ sources:
 
 ## In plain words
 ## Key takeaways
-## What it is
+## What it is            # news pages: "What happened"
 ## Why it matters
 ## How it works
 ## Things to watch
@@ -45,6 +49,9 @@ sources:
 - `sources` is the reference list. The build renders it at the bottom of the page, so don't repeat it in the body.
   - Optionally label a source as `[official]`, `[press]`, `[video]`, `[code]` or `[web]`. Unlabelled sources are guessed from the domain: YouTube is video, GitHub is code, and well-known news sites are press. Label the company's own site, docs and blog `[official]`.
 - `related` lists the slugs of existing pages this topic genuinely connects to, usually 1–4. These links draw the lines on the home page map and the "Related topics" cards. Only use slugs that exist. When you link A to B, consider adding A to B's `related` too.
+- `found_in` is set once, by the writer, when the page is created. The site shows it as "First heard in <channel> on YouTube, <date>". Never change it later.
+- `verdict` and `take` are a draft of the site owner's opinion. Base it on the evidence, not on the source's enthusiasm: `worth-trying` means a reader could use it today, `watch` means real but early or narrow, `hype` means the claims outrun the evidence. Always leave `take_approved: false`; the owner reviews and flips it.
+- The site shows a progress bar per page, counting these sections: concepts need In plain words, Key takeaways, What it is, How it works, Why it matters and Things to watch. Products need the same minus How it works. News uses What happened instead of What it is. Use these exact headings.
 - **Key takeaways** is exactly 3 short bullets. A reader who stops after them should know the most important facts.
 - Tag beginner-friendly `concept` pages with `basics`. These appear in "Start here" on the home page.
 - **How it works** is required for `concept` pages, like "how to build an MCP server" or "what a RAG pipeline is". Use numbered steps, an everyday analogy, and a short code block or ASCII diagram if one makes it click.

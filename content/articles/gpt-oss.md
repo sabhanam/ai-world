@@ -6,6 +6,9 @@ status: complete
 summary: In August 2025 OpenAI published two open-weight reasoning models, gpt-oss-120b and gpt-oss-20b, free to download and run under Apache 2.0.
 tags: [open-models, openai]
 related: [ai-agents]
+verdict: watch
+take: "A strong option for private or offline use. Compare it with other open models on your own tasks before switching."
+take_approved: false
 sponsored: false
 updated: 2026-10-13
 sources:

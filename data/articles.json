@@ -18,6 +18,16 @@
       "claude-code",
       "rag-pipelines"
     ],
+    "progress": [
+      6,
+      6
+    ],
+    "found": {
+      "text": "First found on modelcontextprotocol.io",
+      "url": "https://modelcontextprotocol.io/"
+    },
+    "verdict": "worth-trying",
+    "take_approved": false,
     "sources": 3
   },
   {
@@ -38,6 +48,14 @@
       "ai-agents",
       "model-context-protocol"
     ],
+    "progress": [
+      1,
+      6
+    ],
+    "found": {
+      "text": "First found on en.wikipedia.org",
+      "url": "https://en.wikipedia.org/wiki/Retrieval-augmented_generation"
+    },
     "sources": 1
   },
   {
@@ -58,6 +76,16 @@
       "claude-code",
       "rag-pipelines"
     ],
+    "progress": [
+      6,
+      6
+    ],
+    "found": {
+      "text": "First found on anthropic.com",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents"
+    },
+    "verdict": "watch",
+    "take_approved": false,
     "sources": 2
   },
   {
@@ -78,6 +106,16 @@
       "ai-agents",
       "model-context-protocol"
     ],
+    "progress": [
+      5,
+      5
+    ],
+    "found": {
+      "text": "First found on anthropic.com",
+      "url": "https://www.anthropic.com/claude-code"
+    },
+    "verdict": "worth-trying",
+    "take_approved": false,
     "sources": 2
   },
   {
@@ -96,6 +134,16 @@
     "related": [
       "ai-agents"
     ],
+    "progress": [
+      5,
+      5
+    ],
+    "found": {
+      "text": "First found on openai.com",
+      "url": "https://openai.com/index/introducing-gpt-oss/"
+    },
+    "verdict": "watch",
+    "take_approved": false,
     "sources": 2
   }
 ]

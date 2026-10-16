@@ -6,6 +6,9 @@ status: complete
 summary: An AI agent is a language model that works in a loop, choosing tools and taking steps on its own until a task is done.
 tags: [agents, basics]
 related: [model-context-protocol, claude-code, rag-pipelines]
+verdict: watch
+take: "Real and improving fast, but give agents narrow jobs whose results you can check before trusting them with open-ended ones."
+take_approved: false
 sponsored: false
 updated: 2026-10-15
 sources:

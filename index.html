@@ -13,37 +13,32 @@
 <script>try{const t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch{}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="site-nav">
   <a class="brand" href="./"><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span><span>AI <b>World</b></span></a>
-  <nav><a href="#map">Map</a><a href="#topics">All topics</a><a href="https://sabhanam.github.io/me/">About me</a><button class="theme-toggle" type="button" aria-label="Switch colour theme"></button></nav>
+  <nav><a href="#week">This week</a><a href="#topics">All topics</a><a href="https://sabhanam.github.io/me/">About me</a><button class="theme-toggle" type="button" aria-label="Switch colour theme"></button></nav>
 </header>
 <main>
   <section class="hero">
     <div class="aurora" aria-hidden="true"></div>
-    <h1>What's happening in AI, in plain words.</h1>
-    <p class="hero-lede">I follow the channels and sites worth following. AI agents pick out each product and idea, research it properly, and write it up so anyone can follow along. Read the short version, or follow the sources if you want more.</p>
-    <form class="search" role="search" onsubmit="return false">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-      <input id="q" type="search" placeholder="Search topics, like MCP or RAG" aria-label="Search topics" autocomplete="off">
-    </form>
-  </section>
-
-  <div class="band" aria-label="Library at a glance">
-    <dl id="stats"></dl>
-  </div>
-
-  <section id="map" class="home-only" aria-labelledby="map-title">
-    <h2 id="map-title" class="section-title">The map</h2>
-    <p class="section-lede">Every topic and how they connect. Bigger dots have more sources behind them. Hover to see a topic's neighbours, click to read it.</p>
-    <ul class="legend">
-      <li class="k-concept">Concept</li><li class="k-product">Product</li><li class="k-news">News</li><li class="dashed">Still researching</li>
-    </ul>
-    <div class="map-frame"><svg id="map-svg" role="group" aria-label="Map of topics"></svg></div>
-    <p class="map-note">On a small screen, scroll the map sideways.</p>
+    <div class="hero-top">
+      <h1>What's happening in AI, in plain words.</h1>
+      <p class="hero-lede">The videos and news I follow, turned into short explainers by AI agents and checked against their sources. Every dot is a topic; lines show how they connect.</p>
+    </div>
+    <div id="map" class="map-frame">
+      <form class="search" role="search" onsubmit="return false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input id="q" type="search" placeholder="Search topics, like MCP" aria-label="Search topics" autocomplete="off">
+      </form>
+      <svg id="map-svg" role="group" aria-label="Map of topics. Each link opens a topic."></svg>
+      <ul class="legend" aria-label="Key">
+        <li class="k-concept">Concept</li><li class="k-product">Product</li><li class="k-news">News</li><li class="dashed">Still researching</li>
+      </ul>
+    </div>
+    <p id="stats" class="map-caption"></p>
   </section>
 
   <section id="week" class="home-only" aria-labelledby="week-title">

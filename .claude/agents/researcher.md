@@ -18,6 +18,7 @@ You get a slug. Open `content/articles/<slug>.md`.
 5. **Update frontmatter:**
    - Add every URL you relied on to `sources`. Keep the existing ones, put official sources before secondary ones, and label them `[official]`, `[press]` and so on (see `CLAUDE.md`).
    - Check `related`: add existing slugs that genuinely connect, and remove weak ones. Tag beginner-friendly concepts `basics`.
+   - Draft `verdict` and `take` from the evidence you found (see `CLAUDE.md`), and keep `take_approved: false`. If the page already has an approved take, leave it alone.
    - Add any jargon the page relies on to `content/glossary.md` if it isn't there yet.
    - Tighten the `summary` and fix the `tags`.
    - Set `updated` to today and `status: complete`.
