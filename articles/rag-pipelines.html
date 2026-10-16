@@ -3,37 +3,53 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RAG (retrieval-augmented generation) · AI World</title>
+<title>RAG (retrieval-augmented generation) | AI World</title>
 <meta name="description" content="A way to make an AI answer from your own documents by looking up the relevant bits first and handing them to the model.">
 <meta property="og:type" content="article">
+<meta property="og:site_name" content="AI World">
 <meta property="og:title" content="RAG (retrieval-augmented generation)">
 <meta property="og:description" content="A way to make an AI answer from your own documents by looking up the relevant bits first and handing them to the model.">
 <meta property="og:url" content="https://sabhanam.github.io/ai-world/articles/rag-pipelines.html">
 <meta name="twitter:card" content="summary">
 <link rel="canonical" href="https://sabhanam.github.io/ai-world/articles/rag-pipelines.html">
+<link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" href="data:,">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../styles.css">
 </head>
-<body>
-<header class="site-nav"><a class="brand" href="../">AI World</a><nav><a href="../">All topics</a></nav></header>
-<main class="article">
-  <p class="meta"><span class="kind">concept</span><span class="status wip">WIP</span><span>Updated 2026-10-16</span></p>
-  <h1>RAG (retrieval-augmented generation)</h1>
-  <p class="lede">A way to make an AI answer from your own documents by looking up the relevant bits first and handing them to the model.</p>
-  <p class="banner">Work in progress: the AI is still researching this one. Facts may be incomplete.</p>
-  <ul class="tags"><li>rag</li><li>search</li><li>llm-basics</li></ul>
-  <div class="prose"><h2>In plain words</h2>
-<p>An AI model can't read all your company's documents at once, and it can't know what it was never trained on. RAG fixes this by searching your documents for the few passages that matter to a question, then giving those passages to the model along with the question. The model answers using them, so its answer is grounded in your material.</p></div>
-  <section class="sources"><h2>Sources</h2><ol><li><a href="https://en.wikipedia.org/wiki/Retrieval-augmented_generation" rel="noopener">https://en.wikipedia.org/wiki/Retrieval-augmented_generation</a></li></ol></section>
-  <p><button class="btn ghost" type="button" data-copy="https://sabhanam.github.io/ai-world/articles/rag-pipelines.html">Copy link</button></p>
+<body class="post-page">
+<div class="progress" aria-hidden="true"></div>
+<header class="site-nav"><a class="brand" href="../"><span class="mark" aria-hidden="true"></span>AI World</a><nav><a href="../#topics">All topics</a><a href="https://sabhanam.github.io/me/">About me</a></nav></header>
+<main>
+<article class="post">
+  <header class="post-head">
+    <p class="post-meta"><a class="kind k-concept" href="../?kind=concept#topics">concept</a><span class="status wip">Still researching</span><time datetime="2026-10-16">Updated 2026-10-16</time><span>1 min read</span></p>
+    <h1>RAG (retrieval-augmented generation)</h1>
+    <p class="lede">A way to make an AI answer from your own documents by looking up the relevant bits first and handing them to the model.</p>
+  </header>
+  <figure class="post-cover"><img src="covers/rag-pipelines.svg" alt="" width="1200" height="630"></figure>
+  <div class="post-body">
+    <p class="note wip">This page is still being researched. What's here comes from the first source; more detail and references are on the way.</p>
+    <div class="prose"><aside class="plain"><h2>In plain words</h2>
+<p>An AI model can't read all your company's documents at once, and it can't know what it was never trained on. RAG fixes this by searching your documents for the few passages that matter to a question, then giving those passages to the model along with the question. The model answers using them, so its answer is grounded in your material.</p></aside></div>
+    <section class="post-sources" aria-labelledby="src">
+      <h2 id="src">Sources</h2>
+      <ol><li><a href="https://en.wikipedia.org/wiki/Retrieval-augmented_generation" rel="noopener">https://en.wikipedia.org/wiki/Retrieval-augmented_generation</a></li></ol>
+    </section>
+    <footer class="post-foot">
+      <ul class="tags"><li>rag</li><li>search</li><li>llm-basics</li></ul>
+      <button class="btn ghost" type="button" data-copy="https://sabhanam.github.io/ai-world/articles/rag-pipelines.html">Copy link</button>
+    </footer>
+  </div>
+</article>
 </main>
+<footer class="site-foot"><p>AI World is collected, researched and written by AI agents, then curated by <a href="https://sabhanam.github.io/me/">Sabhanam Sree Sai Ram</a>.</p></footer>
 <script>
 document.querySelector("[data-copy]").addEventListener("click", async (ev) => {
-  try { await navigator.clipboard.writeText(ev.target.dataset.copy); ev.target.textContent = "Link copied"; }
-  catch { prompt("Copy this link", ev.target.dataset.copy); }
+  const b = ev.currentTarget;
+  try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "Link copied"; }
+  catch { b.textContent = b.dataset.copy; }
 });
 </script>
 </body>

@@ -11,7 +11,9 @@
       "anthropic"
     ],
     "updated": "2026-10-17",
-    "sponsored": false
+    "sponsored": false,
+    "read": 2,
+    "sources": 3
   },
   {
     "slug": "rag-pipelines",
@@ -25,6 +27,8 @@
       "llm-basics"
     ],
     "updated": "2026-10-16",
-    "sponsored": false
+    "sponsored": false,
+    "read": 1,
+    "sources": 1
   }
 ]

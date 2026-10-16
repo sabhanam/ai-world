@@ -3,31 +3,37 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Model Context Protocol (MCP) · AI World</title>
+<title>Model Context Protocol (MCP) | AI World</title>
 <meta name="description" content="An open standard that lets AI assistants plug into outside tools and data, so one connector works with many apps.">
 <meta property="og:type" content="article">
+<meta property="og:site_name" content="AI World">
 <meta property="og:title" content="Model Context Protocol (MCP)">
 <meta property="og:description" content="An open standard that lets AI assistants plug into outside tools and data, so one connector works with many apps.">
 <meta property="og:url" content="https://sabhanam.github.io/ai-world/articles/model-context-protocol.html">
 <meta name="twitter:card" content="summary">
 <link rel="canonical" href="https://sabhanam.github.io/ai-world/articles/model-context-protocol.html">
+<link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" href="data:,">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../styles.css">
 </head>
-<body>
-<header class="site-nav"><a class="brand" href="../">AI World</a><nav><a href="../">All topics</a></nav></header>
-<main class="article">
-  <p class="meta"><span class="kind">concept</span><span class="status complete">Complete</span><span>Updated 2026-10-17</span></p>
-  <h1>Model Context Protocol (MCP)</h1>
-  <p class="lede">An open standard that lets AI assistants plug into outside tools and data, so one connector works with many apps.</p>
-  
-  <ul class="tags"><li>agents</li><li>tooling</li><li>anthropic</li></ul>
-  <div class="prose"><h2>In plain words</h2>
+<body class="post-page">
+<div class="progress" aria-hidden="true"></div>
+<header class="site-nav"><a class="brand" href="../"><span class="mark" aria-hidden="true"></span>AI World</a><nav><a href="../#topics">All topics</a><a href="https://sabhanam.github.io/me/">About me</a></nav></header>
+<main>
+<article class="post">
+  <header class="post-head">
+    <p class="post-meta"><a class="kind k-concept" href="../?kind=concept#topics">concept</a><span class="status complete">Researched</span><time datetime="2026-10-17">Updated 2026-10-17</time><span>2 min read</span></p>
+    <h1>Model Context Protocol (MCP)</h1>
+    <p class="lede">An open standard that lets AI assistants plug into outside tools and data, so one connector works with many apps.</p>
+  </header>
+  <figure class="post-cover"><img src="covers/model-context-protocol.svg" alt="" width="1200" height="630"></figure>
+  <div class="post-body">
+    
+    <div class="prose"><aside class="plain"><h2>In plain words</h2>
 <p>An AI assistant on its own only knows what it was trained on and what you paste in. MCP is a common "plug shape" that lets it connect to other things, like your files, a database, GitHub or a calendar, so it can look things up and take actions. Anthropic introduced it in November 2024 as an open standard, and many other AI apps now support it.</p>
-<h2>What it is</h2>
+</aside><h2>What it is</h2>
 <p>MCP (Model Context Protocol) is a set of rules for how an AI app and an outside tool talk to each other. A protocol is just an agreed way of exchanging messages, the way every website speaks HTTP.</p>
 <p>Before MCP, every AI app needed its own custom connector for every tool. With MCP, a tool maker writes <strong>one MCP server</strong>, and any app that speaks MCP can use it.</p>
 <h2>Why it matters</h2>
@@ -58,13 +64,23 @@
 <li><strong>Security:</strong> a server can do whatever its code allows. Only install servers you trust, and watch for "prompt injection", where text from a web page or file tries to trick the AI into misusing a tool.</li>
 <li><strong>Quality varies:</strong> there are thousands of community servers, and not all are maintained.</li>
 </ul></div>
-  <section class="sources"><h2>Sources</h2><ol><li><a href="https://modelcontextprotocol.io/" rel="noopener">https://modelcontextprotocol.io/</a></li><li><a href="https://www.anthropic.com/news/model-context-protocol" rel="noopener">https://www.anthropic.com/news/model-context-protocol</a></li><li><a href="https://github.com/modelcontextprotocol" rel="noopener">https://github.com/modelcontextprotocol</a></li></ol></section>
-  <p><button class="btn ghost" type="button" data-copy="https://sabhanam.github.io/ai-world/articles/model-context-protocol.html">Copy link</button></p>
+    <section class="post-sources" aria-labelledby="src">
+      <h2 id="src">Sources</h2>
+      <ol><li><a href="https://modelcontextprotocol.io/" rel="noopener">https://modelcontextprotocol.io/</a></li><li><a href="https://www.anthropic.com/news/model-context-protocol" rel="noopener">https://www.anthropic.com/news/model-context-protocol</a></li><li><a href="https://github.com/modelcontextprotocol" rel="noopener">https://github.com/modelcontextprotocol</a></li></ol>
+    </section>
+    <footer class="post-foot">
+      <ul class="tags"><li>agents</li><li>tooling</li><li>anthropic</li></ul>
+      <button class="btn ghost" type="button" data-copy="https://sabhanam.github.io/ai-world/articles/model-context-protocol.html">Copy link</button>
+    </footer>
+  </div>
+</article>
 </main>
+<footer class="site-foot"><p>AI World is collected, researched and written by AI agents, then curated by <a href="https://sabhanam.github.io/me/">Sabhanam Sree Sai Ram</a>.</p></footer>
 <script>
 document.querySelector("[data-copy]").addEventListener("click", async (ev) => {
-  try { await navigator.clipboard.writeText(ev.target.dataset.copy); ev.target.textContent = "Link copied"; }
-  catch { prompt("Copy this link", ev.target.dataset.copy); }
+  const b = ev.currentTarget;
+  try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "Link copied"; }
+  catch { b.textContent = b.dataset.copy; }
 });
 </script>
 </body>

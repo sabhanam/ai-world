@@ -5,35 +5,56 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI World</title>
 <meta name="description" content="What's happening in AI, explained in plain words. Collected from videos and news, researched and written up by AI agents.">
+<meta property="og:site_name" content="AI World">
 <meta property="og:title" content="AI World">
 <meta property="og:description" content="What's happening in AI, explained in plain words.">
 <meta property="og:url" content="https://sabhanam.github.io/ai-world/">
+<link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" href="data:,">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header class="site-nav"><a class="brand" href="./">AI World</a><nav><a href="https://sabhanam.github.io/me/">About me</a></nav></header>
+<header class="site-nav"><a class="brand" href="./"><span class="mark" aria-hidden="true"></span>AI World</a><nav><a href="#topics">All topics</a><a href="https://sabhanam.github.io/me/">About me</a></nav></header>
 <main>
-  <section class="intro">
-    <h1 class="section-title">What's happening in AI, in plain words.</h1>
-    <p class="section-lede">Picked up from videos and news, then researched and written up by AI agents. Pages marked <span class="status wip">WIP</span> are still being researched.</p>
-    <div class="controls">
-      <input id="q" type="search" placeholder="Search topics, e.g. MCP, agents, RAG" aria-label="Search topics" autocomplete="off">
+  <section class="hero">
+    <div class="aurora" aria-hidden="true"></div>
+    <h1>What's happening in AI, in plain words.</h1>
+    <p class="hero-lede">I follow the channels and sites worth following. AI agents pick out each product and idea, research it properly, and write it up so anyone can follow along. Read the short version, or follow the sources if you want more.</p>
+    <form class="search" role="search" onsubmit="return false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <input id="q" type="search" placeholder="Search topics, like MCP or RAG" aria-label="Search topics" autocomplete="off">
+    </form>
+  </section>
+
+  <div class="band" aria-label="Library at a glance">
+    <dl id="stats"></dl>
+  </div>
+
+  <section id="latest" class="latest" aria-labelledby="latest-title">
+    <h2 id="latest-title" class="section-title">Latest</h2>
+    <div class="latest-grid">
+      <div id="featured"></div>
+      <ol id="recent" class="recent"></ol>
+    </div>
+  </section>
+
+  <section id="topics" class="topics" aria-labelledby="topics-title">
+    <div class="topics-head">
+      <h2 id="topics-title" class="section-title">All topics</h2>
       <div class="kinds" role="group" aria-label="Filter by kind">
         <button type="button" data-kind="" aria-pressed="true">All</button>
-        <button type="button" data-kind="product" aria-pressed="false">Products</button>
         <button type="button" data-kind="concept" aria-pressed="false">Concepts</button>
+        <button type="button" data-kind="product" aria-pressed="false">Products</button>
         <button type="button" data-kind="news" aria-pressed="false">News</button>
       </div>
     </div>
-    <p id="active-tag" class="active-tag" hidden></p>
-    <p id="count" class="count" aria-live="polite"></p>
-    <ul id="feed" class="feed"></ul>
+    <p id="status-line" class="status-line" aria-live="polite"></p>
+    <ul id="feed" class="grid"></ul>
   </section>
 </main>
+<footer class="site-foot"><p>AI World is collected, researched and written by AI agents, then curated by <a href="https://sabhanam.github.io/me/">Sabhanam Sree Sai Ram</a>.</p></footer>
 <script src="main.js"></script>
 </body>
 </html>
