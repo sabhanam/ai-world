@@ -1,18 +1,26 @@
-"""Build articles/<slug>.html and data/articles.json from content/articles/*.md."""
+"""Build articles/<slug>.html and data/articles.json from content/articles/*.md and content/glossary.md."""
 import html
 import json
 import re
 from pathlib import Path
+from urllib.parse import urlparse
 
 import markdown
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "content" / "articles"
+GLOSSARY = ROOT / "content" / "glossary.md"
 OUT = ROOT / "articles"
 INDEX = ROOT / "data" / "articles.json"
 SITE_URL = "https://sabhanam.github.io/ai-world"
 KINDS = {"product", "concept", "news"}
 STATUSES = {"wip", "complete"}
+SOURCE_LABELS = {"official": "Official", "press": "Press", "video": "Video", "code": "Code", "web": "Web"}
+PRESS = {"techcrunch.com", "theverge.com", "wired.com", "arstechnica.com", "reuters.com", "bloomberg.com",
+         "nytimes.com", "ft.com", "venturebeat.com", "technologyreview.com", "cnbc.com", "theinformation.com",
+         "wikipedia.org"}
+STATUS_TEXT = {"wip": "Still researching", "complete": "Researched"}
+e = lambda s: html.escape(str(s), quote=True)
 
 
 def parse(text):
@@ -44,6 +52,23 @@ def unquote(v):
     return v
 
 
+def source(raw):
+    """`https://x.dev [official]` -> (url, label). Without a label, guess from the domain."""
+    m = re.match(r"^(\S+)(?:\s+\[(\w+)\])?$", raw.strip())
+    url, label = m.group(1), (m.group(2) or "").lower()
+    if label not in SOURCE_LABELS:
+        host = urlparse(url).netloc.lower().removeprefix("www.")
+        if host in ("youtube.com", "youtu.be", "m.youtube.com"):
+            label = "video"
+        elif host == "github.com":
+            label = "code"
+        elif any(host == p or host.endswith("." + p) for p in PRESS):
+            label = "press"
+        else:
+            label = "web"
+    return url, label
+
+
 def load(path):
     meta, body = parse(path.read_text(encoding="utf-8"))
     for f in ("title", "summary", "kind", "status", "updated"):
@@ -53,23 +78,62 @@ def load(path):
         raise ValueError(f"{path.name}: bad kind/status")
     meta["slug"] = meta.get("slug") or path.stem
     meta["tags"] = meta.get("tags") or []
-    meta["sources"] = meta.get("sources") or []
+    meta["related"] = meta.get("related") or []
+    meta["sources"] = [source(s) for s in meta.get("sources") or []]
     meta["sponsored"] = str(meta.get("sponsored", "")).lower() == "true"
+    meta["read"] = max(1, round(len(re.findall(r"\w+", body)) / 220))
     return meta, body
 
 
+def load_glossary():
+    """Lines like `- **API**: a way for one program to ask another for something.`"""
+    if not GLOSSARY.exists():
+        return {}
+    return dict(re.findall(r"^-\s+\*\*(.+?)\*\*:\s*(.+)$", GLOSSARY.read_text(encoding="utf-8"), re.M))
 
-def read_minutes(body):
-    return max(1, round(len(re.findall(r"\w+", body)) / 220))
+
+def add_terms(content, glossary, title):
+    """Wrap the first use of each glossary term in a hover/focus definition. Skips code, links and headings."""
+    remaining = {t: d for t, d in glossary.items() if t.lower() not in title.lower()}
+    if not remaining:
+        return content
+    pattern = re.compile(r"\b(" + "|".join(re.escape(t) for t in sorted(remaining, key=len, reverse=True)) + r")\b")
+    lookup = {t.lower(): (t, d) for t, d in remaining.items()}
+    used, skip, out = set(), 0, []
+    for part in re.split(r"(<[^>]+>)", content):
+        if part.startswith("<"):
+            tag = re.match(r"</?(\w+)", part)
+            if tag and tag.group(1) in ("code", "pre", "a", "h1", "h2", "h3"):
+                skip += -1 if part.startswith("</") else 1
+            out.append(part)
+            continue
+        if skip:
+            out.append(part)
+            continue
+
+        def wrap(m):
+            key = m.group(1).lower()
+            if key in used or key not in lookup:
+                return m.group(0)
+            used.add(key)
+            return (f'<span class="term" tabindex="0">{m.group(0)}'
+                    f'<span class="def" role="tooltip">{e(lookup[key][1])}</span></span>')
+        out.append(pattern.sub(wrap, part))
+    return "".join(out)
 
 
-def page(meta, body):
-    e = lambda s: html.escape(str(s), quote=True)
+def page(meta, body, by_slug, glossary):
     url = f"{SITE_URL}/articles/{meta['slug']}.html"
-    content = markdown.markdown(body, extensions=["fenced_code", "tables"])
-    # The plain-words summary is the page's most important part, so it gets its own box.
-    content = re.sub(r"<h2>In plain words</h2>(.*?)(?=<h2>|$)",
-                     r'<aside class="plain"><h2>In plain words</h2>\1</aside>', content, count=1, flags=re.S)
+    md = markdown.Markdown(extensions=["fenced_code", "tables", "toc"])
+    content = md.convert(body)
+    toc = [(t["id"], t["name"]) for t in md.toc_tokens]
+    # The two summary sections get boxes: they're what a skimming reader stops at.
+    for name, cls in (("In plain words", "plain"), ("Key takeaways", "takeaways")):
+        content = re.sub(rf'<h2 id="([^"]+)">{name}</h2>(.*?)(?=<h2|$)',
+                         rf'<aside class="{cls}" aria-labelledby="\1"><h2 id="\1">{name}</h2>\2</aside>',
+                         content, count=1, flags=re.S)
+    content = add_terms(content, glossary, meta["title"])
+
     notes = ""
     if meta["status"] == "wip":
         notes += ('<p class="note wip">This page is still being researched. '
@@ -77,9 +141,18 @@ def page(meta, body):
     if meta["sponsored"]:
         notes += ('<p class="note sponsored">At least one source was sponsored. '
                   "Claims that only the sponsor makes are marked as such.</p>")
-    sources = "".join(f'<li><a href="{e(s)}" rel="noopener">{e(s)}</a></li>' for s in meta["sources"])
-    tags = "".join(f"<li>{e(t)}</li>" for t in meta["tags"])
-    status = "Still researching" if meta["status"] == "wip" else "Researched"
+    toc_html = "".join(f'<li><a href="#{e(i)}">{e(n)}</a></li>' for i, n in toc)
+    sources = "".join(
+        f'<li><span class="src-label {lbl}">{SOURCE_LABELS[lbl]}</span>'
+        f'<a href="{e(u)}" rel="noopener">{e(urlparse(u).netloc.removeprefix("www.") + urlparse(u).path.rstrip("/"))}</a></li>'
+        for u, lbl in meta["sources"])
+    related = "".join(
+        f'<li class="k-{e(r["kind"])}"><a href="{e(r["slug"])}.html"><span class="kind">{e(r["kind"])}</span>'
+        f'<span class="rel-title">{e(r["title"])}</span><span class="rel-sum">{e(r["summary"])}</span></a></li>'
+        for r in (by_slug[s] for s in meta["related"]))
+    related_html = (f'<section class="related" aria-labelledby="rel"><h2 id="rel">Related topics</h2>'
+                    f'<ul>{related}</ul></section>') if related else ""
+    tags = "".join(f'<li><a href="../?tag={e(t)}#topics">{e(t)}</a></li>' for t in meta["tags"])
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -95,6 +168,7 @@ def page(meta, body):
 <meta name="twitter:card" content="summary">
 <link rel="canonical" href="{url}">
 <link rel="icon" href="data:,">
+<script>try{{const t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}}catch{{}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
@@ -102,36 +176,37 @@ def page(meta, body):
 </head>
 <body class="post-page">
 <div class="progress" aria-hidden="true"></div>
-<header class="site-nav"><a class="brand" href="../"><span class="mark" aria-hidden="true"></span>AI World</a><nav><a href="../#topics">All topics</a><a href="https://sabhanam.github.io/me/">About me</a></nav></header>
+<header class="site-nav">
+  <a class="brand" href="../"><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span><span>AI <b>World</b></span></a>
+  <nav><a href="../#map">Map</a><a href="../#topics">All topics</a><button class="theme-toggle" type="button" aria-label="Switch colour theme"></button></nav>
+</header>
 <main>
-<article class="post">
+<article class="post k-{e(meta['kind'])}">
   <header class="post-head">
-    <p class="post-meta"><a class="kind k-{e(meta['kind'])}" href="../?kind={e(meta['kind'])}#topics">{e(meta['kind'])}</a><span class="status {e(meta['status'])}">{status}</span><time datetime="{e(meta['updated'])}">Updated {e(meta['updated'])}</time><span>{meta['read']} min read</span></p>
+    <p class="post-meta"><a class="kind" href="../?kind={e(meta['kind'])}#topics">{e(meta['kind'])}</a><span class="status {e(meta['status'])}">{STATUS_TEXT[meta['status']]}</span><time datetime="{e(meta['updated'])}">Updated {e(meta['updated'])}</time><span>{meta['read']} min read</span></p>
     <h1>{e(meta['title'])}</h1>
     <p class="lede">{e(meta['summary'])}</p>
   </header>
-  <div class="post-body">
-    {notes}
-    <div class="prose">{content}</div>
-    <section class="post-sources" aria-labelledby="src">
-      <h2 id="src">Sources</h2>
-      <ol>{sources}</ol>
-    </section>
-    <footer class="post-foot">
-      <ul class="tags">{tags}</ul>
-      <button class="btn ghost" type="button" data-copy="{url}">Copy link</button>
-    </footer>
+  <div class="post-layout">
+    <nav class="toc" aria-label="On this page"><p>On this page</p><ol>{toc_html}<li><a href="#src">Sources</a></li></ol></nav>
+    <div class="post-body">
+      {notes}
+      <div class="prose">{content}</div>
+      <section class="post-sources" aria-labelledby="src">
+        <h2 id="src">Sources</h2>
+        <ol>{sources}</ol>
+      </section>
+      {related_html}
+      <footer class="post-foot">
+        <ul class="tags">{tags}</ul>
+        <button class="btn ghost" type="button" data-copy="{url}">Copy link</button>
+      </footer>
+    </div>
   </div>
 </article>
 </main>
 <footer class="site-foot"><p>AI World is collected, researched and written by AI agents, then curated by <a href="https://sabhanam.github.io/me/">Sabhanam Sree Sai Ram</a>.</p></footer>
-<script>
-document.querySelector("[data-copy]").addEventListener("click", async (ev) => {{
-  const b = ev.currentTarget;
-  try {{ await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "Link copied"; }}
-  catch {{ b.textContent = b.dataset.copy; }}
-}});
-</script>
+<script src="../site.js"></script>
 </body>
 </html>
 """
@@ -140,22 +215,28 @@ document.querySelector("[data-copy]").addEventListener("click", async (ev) => {{
 def build():
     OUT.mkdir(exist_ok=True)
     INDEX.parent.mkdir(exist_ok=True)
+    loaded = [load(p) for p in sorted(SRC.glob("*.md"))]
+    by_slug = {m["slug"]: m for m, _ in loaded}
+    for meta, _ in loaded:
+        missing = [s for s in meta["related"] if s not in by_slug]
+        if missing:
+            print(f"warning: {meta['slug']}: unknown related {missing}")
+        meta["related"] = [s for s in meta["related"] if s in by_slug and s != meta["slug"]]
+    glossary = load_glossary()
     items = []
-    for path in sorted(SRC.glob("*.md")):
-        meta, body = load(path)
-        meta["read"] = read_minutes(body)
-        (OUT / f"{meta['slug']}.html").write_text(page(meta, body), encoding="utf-8")
-        item = {k: meta[k] for k in ("slug", "title", "kind", "status", "summary", "tags", "updated", "sponsored", "read")}
+    for meta, body in loaded:
+        (OUT / f"{meta['slug']}.html").write_text(page(meta, body, by_slug, glossary), encoding="utf-8")
+        item = {k: meta[k] for k in ("slug", "title", "kind", "status", "summary", "tags", "updated",
+                                     "sponsored", "read", "related")}
         item["sources"] = len(meta["sources"])
         items.append(item)
     # Drop pages whose markdown was removed.
-    live = {i["slug"] for i in items}
     for old in OUT.glob("*.html"):
-        if old.stem not in live:
+        if old.stem not in by_slug:
             old.unlink()
     items.sort(key=lambda i: i["updated"], reverse=True)
     INDEX.write_text(json.dumps(items, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(f"built {len(items)} articles")
+    print(f"built {len(items)} articles, {len(glossary)} glossary terms")
     return items
 
 

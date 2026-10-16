@@ -1,10 +1,11 @@
-// Home: load data/articles.json, show latest + all topics, filter by search text, kind and tag.
+// Home: stats, knowledge map, this week, start here, new products, trending tags, and the searchable list.
 const params = new URLSearchParams(location.search);
 const state = { q: "", kind: params.get("kind") || "", tag: params.get("tag") || "" };
 let articles = [];
 
 const $ = (s) => document.querySelector(s);
 const STATUS = { wip: "Still researching", complete: "Researched" };
+const DAY = 86400000;
 
 function el(tag, attrs = {}, ...kids) {
   const n = document.createElement(tag);
@@ -12,15 +13,127 @@ function el(tag, attrs = {}, ...kids) {
   n.append(...kids);
   return n;
 }
+const svg = (tag, attrs = {}) => {
+  const n = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  return n;
+};
 
 const href = (a) => `articles/${a.slug}.html`;
+// "This week" and "trending" are relative to the newest page, so a quiet week doesn't empty them.
+const newest = () => Math.max(...articles.map((a) => Date.parse(a.updated)));
+const within = (a, days) => Date.parse(a.updated) >= newest() - days * DAY;
 
 function meta(a) {
   return el("p", { class: "post-meta" },
-    el("span", { class: `kind k-${a.kind}` }, a.kind),
+    el("span", { class: "kind" }, a.kind),
     el("span", { class: `status ${a.status}` }, STATUS[a.status]),
     el("time", { datetime: a.updated }, a.updated),
     el("span", {}, `${a.read} min read`));
+}
+
+function row(a, extra) {
+  return el("li", { class: `k-${a.kind}` },
+    el("a", { href: href(a) },
+      el("span", { class: "row-title" }, a.title),
+      el("span", { class: "row-meta" }, extra ?? `${STATUS[a.status]}, ${a.read} min read`)));
+}
+
+function fill(sel, items, emptyText) {
+  $(sel).replaceChildren(...(items.length ? items : [el("li", { class: "empty" }, emptyText)]));
+}
+
+function renderStats() {
+  const done = articles.filter((a) => a.status === "complete").length;
+  const sources = articles.reduce((n, a) => n + (a.sources || 0), 0);
+  const stat = (n, label) => el("div", {}, el("dt", {}, label), el("dd", {}, String(n)));
+  $("#stats").replaceChildren(stat(articles.length, "topics explained"), stat(done, "fully researched"), stat(sources, "sources cited"));
+}
+
+function renderWeek() {
+  const week = articles.filter((a) => within(a, 7));
+  const lead = week.find((a) => a.status === "complete") || week[0];
+  $("#featured").replaceChildren(lead ? el("article", { class: `feature k-${lead.kind}` },
+    meta(lead),
+    el("h3", {}, el("a", { href: href(lead) }, lead.title)),
+    el("p", {}, lead.summary),
+    el("a", { class: "read-link", href: href(lead) }, "Read the explainer")) : "");
+  fill("#recent", week.filter((a) => a !== lead).slice(0, 5).map((a) => row(a)), "Nothing else this week.");
+}
+
+function renderTrio() {
+  const start = articles.filter((a) => a.kind === "concept" && a.tags.includes("basics"))
+    .sort((a, b) => (a.status === b.status ? a.title.localeCompare(b.title) : a.status === "complete" ? -1 : 1));
+  fill("#start", start.map((a) => row(a, `${a.read} min read`)), "Beginner topics will appear here.");
+  fill("#products", articles.filter((a) => a.kind === "product").slice(0, 4).map((a) => row(a, a.summary)),
+    "No products covered yet.");
+  const counts = new Map();
+  for (const a of articles.filter((x) => within(x, 30))) for (const t of a.tags) counts.set(t, (counts.get(t) || 0) + 1);
+  const top = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 12);
+  fill("#trending", top.map(([t, n]) => {
+    const b = el("button", { type: "button" }, t, el("small", {}, String(n)));
+    b.addEventListener("click", () => { state.tag = t; render(); $("#topics").scrollIntoView({ behavior: "smooth" }); });
+    return el("li", {}, b);
+  }), "No tags yet.");
+}
+
+// Knowledge map: a small force layout run to rest once, then drawn as static SVG.
+function renderMap() {
+  const W = 1000, H = 440, frame = $("#map-svg");
+  frame.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  if (!articles.length) { $("#map").hidden = true; return; }
+  const idx = new Map(articles.map((a, i) => [a.slug, i]));
+  const seen = new Set(), edges = [];
+  articles.forEach((a, i) => (a.related || []).forEach((s) => {
+    const j = idx.get(s);
+    const key = [Math.min(i, j), Math.max(i, j)].join("-");
+    if (j !== undefined && !seen.has(key)) { seen.add(key); edges.push([i, j]); }
+  }));
+  // Start on a circle so the result is the same on every load.
+  const nodes = articles.map((a, i) => {
+    const t = (i / articles.length) * Math.PI * 2;
+    return { a, x: W / 2 + Math.cos(t) * 260, y: H / 2 + Math.sin(t) * 140, vx: 0, vy: 0,
+             r: 9 + Math.min(10, (a.sources || 0) * 2) };
+  });
+  for (let step = 0; step < 400; step++) {
+    const heat = 1 - step / 400;
+    for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+      const p = nodes[i], q = nodes[j];
+      const dx = q.x - p.x, dy = q.y - p.y, d2 = Math.max(dx * dx + dy * dy, 100), d = Math.sqrt(d2);
+      const f = 42000 / d2;
+      p.vx -= (f * dx) / d; p.vy -= (f * dy) / d; q.vx += (f * dx) / d; q.vy += (f * dy) / d;
+    }
+    for (const [i, j] of edges) {
+      const p = nodes[i], q = nodes[j], dx = q.x - p.x, dy = q.y - p.y, d = Math.hypot(dx, dy) || 1;
+      const f = (d - 220) * 0.02;
+      p.vx += (f * dx) / d; p.vy += (f * dy) / d; q.vx -= (f * dx) / d; q.vy -= (f * dy) / d;
+    }
+    for (const n of nodes) {
+      n.vx += (W / 2 - 60 - n.x) * 0.003; n.vy += (H / 2 - n.y) * 0.006;
+      n.x = Math.min(W - 150, Math.max(40, n.x + n.vx * heat)); n.y = Math.min(H - 40, Math.max(40, n.y + n.vy * heat));
+      n.vx *= 0.6; n.vy *= 0.6;
+    }
+  }
+  const lines = edges.map(([i, j]) => svg("line", { class: "edge", x1: nodes[i].x, y1: nodes[i].y, x2: nodes[j].x, y2: nodes[j].y }));
+  const groups = nodes.map((n, i) => {
+    const g = svg("a", { href: href(n.a), class: `node k-${n.a.kind} ${n.a.status}`, "aria-label": `${n.a.title}, ${n.a.kind}` });
+    g.append(svg("circle", { class: "halo", cx: n.x, cy: n.y, r: n.r + 8 }), svg("circle", { class: "dot", cx: n.x, cy: n.y, r: n.r }));
+    const label = svg("text", { x: n.x + n.r + 8, y: n.y + 4.5 });
+    label.textContent = n.a.title.replace(/\s*\(.*\)$/, "").split(/[,:]/)[0].slice(0, 30);
+    g.append(label);
+    const on = () => {
+      frame.classList.add("focus");
+      g.classList.add("on");
+      edges.forEach(([a, b], k) => {
+        if (a === i || b === i) { lines[k].classList.add("on"); groups[a === i ? b : a].classList.add("on"); }
+      });
+    };
+    const off = () => { frame.classList.remove("focus"); frame.querySelectorAll(".on").forEach((x) => x.classList.remove("on")); };
+    g.addEventListener("mouseenter", on); g.addEventListener("focus", on);
+    g.addEventListener("mouseleave", off); g.addEventListener("blur", off);
+    return g;
+  });
+  frame.replaceChildren(...lines, ...groups);
 }
 
 function tagList(a) {
@@ -41,33 +154,6 @@ function card(a) {
     tagList(a));
 }
 
-function renderLatest() {
-  // Lead with the newest fully researched topic; fall back to the newest of any status.
-  const lead = articles.find((a) => a.status === "complete") || articles[0];
-  if (!lead) { $("#latest").hidden = true; return; }
-  $("#featured").replaceChildren(el("article", { class: `feature k-${lead.kind}` },
-    meta(lead),
-    el("h3", {}, el("a", { href: href(lead) }, lead.title)),
-    el("p", {}, lead.summary),
-    el("a", { class: "read-link", href: href(lead) }, "Read the explainer")));
-  $("#recent").replaceChildren(...articles.filter((a) => a !== lead).slice(0, 4).map((a) =>
-    el("li", {},
-      el("a", { href: href(a) },
-        el("span", { class: "recent-title" }, a.title),
-        el("span", { class: "recent-meta" }, `${STATUS[a.status]}, ${a.read} min read`)))));
-  $("#recent").hidden = !$("#recent").children.length;
-}
-
-function renderStats() {
-  const done = articles.filter((a) => a.status === "complete").length;
-  const sources = articles.reduce((n, a) => n + (a.sources || 0), 0);
-  const stat = (n, label) => el("div", {}, el("dt", {}, label), el("dd", {}, String(n)));
-  $("#stats").replaceChildren(
-    stat(articles.length, "topics explained"),
-    stat(done, "fully researched"),
-    stat(sources, "sources cited"));
-}
-
 function matches(a) {
   if (state.kind && a.kind !== state.kind) return false;
   if (state.tag && !a.tags.includes(state.tag)) return false;
@@ -78,7 +164,7 @@ function matches(a) {
 
 function render() {
   const filtering = Boolean(state.q || state.kind || state.tag);
-  $("#latest").hidden = filtering || !articles.length;
+  for (const s of document.querySelectorAll(".home-only")) s.hidden = filtering || !articles.length;
   const shown = articles.filter(matches);
   $("#feed").replaceChildren(...shown.map(card));
   for (const b of document.querySelectorAll("[data-kind]")) b.setAttribute("aria-pressed", String(b.dataset.kind === state.kind));
@@ -101,10 +187,7 @@ function render() {
   }
 }
 
-$("#q").addEventListener("input", (e) => {
-  state.q = e.target.value.trim().toLowerCase();
-  render();
-});
+$("#q").addEventListener("input", (e) => { state.q = e.target.value.trim().toLowerCase(); render(); });
 $("#q").addEventListener("keydown", (e) => {
   if (e.key === "Enter") $("#topics").scrollIntoView({ behavior: "smooth", block: "start" });
 });
@@ -114,5 +197,9 @@ for (const b of document.querySelectorAll("[data-kind]")) {
 
 fetch("data/articles.json", { cache: "no-cache" })
   .then((r) => (r.ok ? r.json() : []))
-  .then((data) => { articles = data; renderStats(); renderLatest(); render(); })
+  .then((data) => {
+    articles = data;
+    renderStats(); renderMap(); renderWeek(); renderTrio(); render();
+    if (state.kind || state.tag) $("#topics").scrollIntoView();
+  })
   .catch(() => { $("#status-line").textContent = "Topics didn't load. Refresh the page to try again."; });

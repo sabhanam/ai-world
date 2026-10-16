@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI agents | AI World</title>
+<meta name="description" content="An AI agent is a language model that works in a loop, choosing tools and taking steps on its own until a task is done.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI World">
+<meta property="og:title" content="AI agents">
+<meta property="og:description" content="An AI agent is a language model that works in a loop, choosing tools and taking steps on its own until a task is done.">
+<meta property="og:url" content="https://sabhanam.github.io/ai-world/articles/ai-agents.html">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://sabhanam.github.io/ai-world/articles/ai-agents.html">
+<link rel="icon" href="data:,">
+<script>try{const t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch{}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body class="post-page">
+<div class="progress" aria-hidden="true"></div>
+<header class="site-nav">
+  <a class="brand" href="../"><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span><span>AI <b>World</b></span></a>
+  <nav><a href="../#map">Map</a><a href="../#topics">All topics</a><button class="theme-toggle" type="button" aria-label="Switch colour theme"></button></nav>
+</header>
+<main>
+<article class="post k-concept">
+  <header class="post-head">
+    <p class="post-meta"><a class="kind" href="../?kind=concept#topics">concept</a><span class="status complete">Researched</span><time datetime="2026-10-15">Updated 2026-10-15</time><span>2 min read</span></p>
+    <h1>AI agents</h1>
+    <p class="lede">An AI agent is a language model that works in a loop, choosing tools and taking steps on its own until a task is done.</p>
+  </header>
+  <div class="post-layout">
+    <nav class="toc" aria-label="On this page"><p>On this page</p><ol><li><a href="#in-plain-words">In plain words</a></li><li><a href="#key-takeaways">Key takeaways</a></li><li><a href="#what-it-is">What it is</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#things-to-watch">Things to watch</a></li><li><a href="#src">Sources</a></li></ol></nav>
+    <div class="post-body">
+      
+      <div class="prose"><aside class="plain" aria-labelledby="in-plain-words"><h2 id="in-plain-words">In plain words</h2>
+<p>A chat assistant answers one message at a time. An agent is given a goal instead, like "fix this bug" or "find me three flights under $400", and works towards it on its own. It decides what to do next, uses tools such as search or a code editor, looks at the result and repeats until it's finished or stuck.</p>
+</aside><aside class="takeaways" aria-labelledby="key-takeaways"><h2 id="key-takeaways">Key takeaways</h2>
+<ul>
+<li>An agent is an <span class="term" tabindex="0">LLM<span class="def" role="tooltip">large language model, the kind of AI behind chat assistants, trained on huge amounts of text to predict and write language.</span></span> plus tools plus a loop: think, act, check, repeat.</li>
+<li>The tools are what make it useful; MCP is a common way to plug them in.</li>
+<li>Simple, well-defined tasks work best. Long open-ended ones still go wrong.</li>
+</ul>
+</aside><h2 id="what-it-is">What it is</h2>
+<p>Anthropic separates two designs. <strong>Workflows</strong> follow steps a developer wrote in advance, with the model filling in each step. <strong>Agents</strong> let the model decide the steps itself, based on what it sees as it goes. Many products called "agents" are really workflows, and that's often the more reliable choice.</p>
+<h2 id="how-it-works">How it works</h2>
+<ol>
+<li><strong>Goal:</strong> you give the agent a task and a set of tools, for example web search, a file editor or a calendar <span class="term" tabindex="0">API<span class="def" role="tooltip">a way for one program to ask another program for data or to do something.</span></span>.</li>
+<li><strong>Plan a step:</strong> the model reads the goal and everything so far, then picks one action, such as "search for X".</li>
+<li><strong>Act:</strong> the app runs that tool and hands the result back to the model.</li>
+<li><strong>Check:</strong> the model looks at the result. Did it work? What's next?</li>
+<li><strong>Repeat</strong> until the task is done, a step limit is reached, or it asks a human for help.</li>
+</ol>
+<p>It's like an intern with a checklist who reports back after each step, except the intern writes their own checklist as they go.</p>
+<h2 id="why-it-matters">Why it matters</h2>
+<p>Agents turn AI from something that answers into something that does work: coding tools that change files and run tests, research tools that read dozens of pages, support bots that can actually issue a refund.</p>
+<h2 id="things-to-watch">Things to watch</h2>
+<ul>
+<li><strong>Errors compound:</strong> a wrong step early can send the whole run off course.</li>
+<li><strong>Cost and time:</strong> every loop is another model call.</li>
+<li><strong>Safety:</strong> an agent with real tools can do real damage, so good systems ask before risky actions.</li>
+</ul></div>
+      <section class="post-sources" aria-labelledby="src">
+        <h2 id="src">Sources</h2>
+        <ol><li><span class="src-label official">Official</span><a href="https://www.anthropic.com/engineering/building-effective-agents" rel="noopener">anthropic.com/engineering/building-effective-agents</a></li><li><span class="src-label official">Official</span><a href="https://modelcontextprotocol.io/" rel="noopener">modelcontextprotocol.io</a></li></ol>
+      </section>
+      <section class="related" aria-labelledby="rel"><h2 id="rel">Related topics</h2><ul><li class="k-concept"><a href="model-context-protocol.html"><span class="kind">concept</span><span class="rel-title">Model Context Protocol (MCP)</span><span class="rel-sum">An open standard that lets AI assistants plug into outside tools and data, so one connector works with many apps.</span></a></li><li class="k-product"><a href="claude-code.html"><span class="kind">product</span><span class="rel-title">Claude Code</span><span class="rel-sum">Anthropic&#x27;s coding agent. It reads your project, edits files and runs commands from the terminal, your IDE or the browser.</span></a></li><li class="k-concept"><a href="rag-pipelines.html"><span class="kind">concept</span><span class="rel-title">RAG (retrieval-augmented generation)</span><span class="rel-sum">A way to make an AI answer from your own documents by looking up the relevant bits first and handing them to the model.</span></a></li></ul></section>
+      <footer class="post-foot">
+        <ul class="tags"><li><a href="../?tag=agents#topics">agents</a></li><li><a href="../?tag=basics#topics">basics</a></li></ul>
+        <button class="btn ghost" type="button" data-copy="https://sabhanam.github.io/ai-world/articles/ai-agents.html">Copy link</button>
+      </footer>
+    </div>
+  </div>
+</article>
+</main>
+<footer class="site-foot"><p>AI World is collected, researched and written by AI agents, then curated by <a href="https://sabhanam.github.io/me/">Sabhanam Sree Sai Ram</a>.</p></footer>
+<script src="../site.js"></script>
+</body>
+</html>

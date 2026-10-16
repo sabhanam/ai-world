@@ -13,6 +13,11 @@
     "updated": "2026-10-17",
     "sponsored": false,
     "read": 2,
+    "related": [
+      "ai-agents",
+      "claude-code",
+      "rag-pipelines"
+    ],
     "sources": 3
   },
   {
@@ -24,11 +29,73 @@
     "tags": [
       "rag",
       "search",
-      "llm-basics"
+      "basics"
     ],
     "updated": "2026-10-16",
     "sponsored": false,
     "read": 1,
+    "related": [
+      "ai-agents",
+      "model-context-protocol"
+    ],
     "sources": 1
+  },
+  {
+    "slug": "ai-agents",
+    "title": "AI agents",
+    "kind": "concept",
+    "status": "complete",
+    "summary": "An AI agent is a language model that works in a loop, choosing tools and taking steps on its own until a task is done.",
+    "tags": [
+      "agents",
+      "basics"
+    ],
+    "updated": "2026-10-15",
+    "sponsored": false,
+    "read": 2,
+    "related": [
+      "model-context-protocol",
+      "claude-code",
+      "rag-pipelines"
+    ],
+    "sources": 2
+  },
+  {
+    "slug": "claude-code",
+    "title": "Claude Code",
+    "kind": "product",
+    "status": "complete",
+    "summary": "Anthropic's coding agent. It reads your project, edits files and runs commands from the terminal, your IDE or the browser.",
+    "tags": [
+      "agents",
+      "coding",
+      "anthropic"
+    ],
+    "updated": "2026-10-14",
+    "sponsored": false,
+    "read": 1,
+    "related": [
+      "ai-agents",
+      "model-context-protocol"
+    ],
+    "sources": 2
+  },
+  {
+    "slug": "gpt-oss",
+    "title": "OpenAI releases gpt-oss, its first open-weight models since GPT-2",
+    "kind": "news",
+    "status": "complete",
+    "summary": "In August 2025 OpenAI published two open-weight reasoning models, gpt-oss-120b and gpt-oss-20b, free to download and run under Apache 2.0.",
+    "tags": [
+      "open-models",
+      "openai"
+    ],
+    "updated": "2026-10-13",
+    "sponsored": false,
+    "read": 1,
+    "related": [
+      "ai-agents"
+    ],
+    "sources": 2
   }
 ]
